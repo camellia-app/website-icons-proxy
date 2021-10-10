@@ -1,13 +1,11 @@
-name = "favicon-proxy-worker"
 type = "javascript"
-zone_id = ""
-account_id = ""
-route = ""
+name = "favicon-proxy-worker"
+account_id = "2ae2849d80f1f30dfbb1013e717678b2"
 workers_dev = true
 compatibility_date = "2021-10-10"
 
 [build]
-command = "npm install && npm run build"
+command = "npm ci --production && npm run build"
 
 [build.upload]
 format = "service-worker"
