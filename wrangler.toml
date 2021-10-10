@@ -1,5 +1,5 @@
 type = "javascript"
-name = "favicon-proxy-worker"
+name = "favicon-proxy-worker-dev"
 account_id = "2ae2849d80f1f30dfbb1013e717678b2"
 workers_dev = true
 compatibility_date = "2021-10-10"
@@ -9,3 +9,9 @@ command = "npm ci --production && npm run build"
 
 [build.upload]
 format = "service-worker"
+
+[env.production]
+name = "favicon-proxy-worker"
+vars = { ENVIRONMENT_NAME = "production", SENTRY_DSN = "https://6662c79ed156431993f3a3d03e3af79f@o367210.ingest.sentry.io/6000685" }
+zone_id = "eae323d2de42cb464832ccc2295636fb"
+route = "favicons.camellia.app/*"
