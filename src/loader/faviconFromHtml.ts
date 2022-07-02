@@ -1,4 +1,4 @@
-import * as Cheerio from 'cheerio';
+import { parse } from 'node-html-parser';
 import { getImageByUrl, ImageDownloadingError } from './imageLoader';
 
 export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blob | undefined> => {
@@ -58,13 +58,14 @@ export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blo
 type Favicon = { mimeType: string | undefined; size: { height: number; width: number } | undefined; url: string };
 
 const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
-  const $ = Cheerio.load(await response.text());
+  const root = parse(await response.text());
 
-  return $('head > link[rel~=icon]')
-    .map(function (): Favicon | undefined {
-      const href = $(this).attr('href');
-      const sizes = $(this).attr('sizes');
-      const type = $(this).attr('type');
+  return root
+    .querySelectorAll('head > link[rel~=icon]')
+    .map((element): Favicon | undefined => {
+      const href = element.getAttribute('href');
+      const sizes = element.getAttribute('sizes');
+      const type = element.getAttribute('type');
 
       if (href === undefined) {
         return undefined;
@@ -109,6 +110,5 @@ const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
         size: resolution,
       };
     })
-    .filter((favicon) => favicon !== undefined)
-    .get();
+    .filter((favicon): favicon is Favicon => favicon !== undefined);
 };
