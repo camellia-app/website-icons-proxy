@@ -3,28 +3,24 @@ name: Deploy
 on:
   release:
     types:
-    - published
+      - published
 
 jobs:
-  cloudflare_worker_production:
-    name: CloudFlare Worker (production)
+  cloudflare_worker:
     runs-on: ubuntu-latest
-    concurrency: production
+    name: Cloudflare Worker
+    concurrency: deploy-production
+
     environment:
       name: production
-      url: https://favicons.camellia.app
+      url: https://website-icons.camellia.app
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2.3.4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Deploy Cloudflare Worker
-      uses: cloudflare/wrangler-action@1.3.0
-      with:
-        apiToken: ${{ secrets.CF_API_TOKEN }}
-        environment: production
-        secrets: |
-          APP_VERSION
-
-      env:
-        APP_VERSION: ${{ github.event.repository.name }}:${{ github.event.release.tag_name }}
+      - name: Run Wrangler
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
