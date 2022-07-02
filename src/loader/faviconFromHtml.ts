@@ -14,7 +14,7 @@ export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blo
   });
 
   if (response.status >= 300) {
-    console.info(`Could not load HTML document: ${htmlUrl} (${response.status} ${response.statusText})`);
+    console.info(`Could not load HTML document: ${htmlUrl} (status code: ${response.status})`);
 
     return undefined;
   }

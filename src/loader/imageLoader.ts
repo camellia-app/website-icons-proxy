@@ -15,7 +15,7 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
   });
 
   if (response.status >= 300) {
-    console.info(`Could not load image by URL: ${url} (${response.status} ${response.statusText})`);
+    console.info(`Could not load image by URL: ${url} (status code: ${response.status})`);
 
     throw new ImageDownloadingError(url);
   }
