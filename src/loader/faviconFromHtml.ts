@@ -101,7 +101,7 @@ const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
         absoluteHref = currentUrl.toString();
       }
 
-      console.info(`Found icon with URL: ${href} (type: ${type ?? '???'}, size: ${sizes ?? '???'})`);
+      console.info(`Found icon with URL: ${absoluteHref} (type: ${type ?? '???'}, size: ${sizes ?? '???'})`);
 
       return {
         url: absoluteHref,
