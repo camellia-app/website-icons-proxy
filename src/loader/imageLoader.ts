@@ -20,5 +20,5 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
     throw new ImageDownloadingError(url);
   }
 
-  return response.blob();
+  return await response.blob();
 };
