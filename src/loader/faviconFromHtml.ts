@@ -62,11 +62,11 @@ const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
 
   return $('head > link[rel~=icon]')
     .map(function (): Favicon | undefined {
-      const url = $(this).attr('href');
+      const href = $(this).attr('href');
       const sizes = $(this).attr('sizes');
       const type = $(this).attr('type');
 
-      if (url === undefined) {
+      if (href === undefined) {
         return undefined;
       }
 
@@ -86,10 +86,25 @@ const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
         }
       }
 
-      console.info(`Found icon with URL: ${url} (type: ${type ?? '???'}, size: ${sizes ?? '???'})`);
+      let absoluteHref = href.trim();
+
+      // fix link if it starts with relative protocol (://)
+      if (absoluteHref.startsWith('://')) {
+        absoluteHref = 'https' + absoluteHref;
+      }
+
+      // fix link if its relative
+      if (!absoluteHref.startsWith('http://') && !absoluteHref.startsWith('https://')) {
+        const currentUrl = new URL(response.url);
+        currentUrl.pathname = absoluteHref;
+
+        absoluteHref = currentUrl.toString();
+      }
+
+      console.info(`Found icon with URL: ${href} (type: ${type ?? '???'}, size: ${sizes ?? '???'})`);
 
       return {
-        url: url.trim(),
+        url: absoluteHref,
         mimeType: type?.trim(),
         size: resolution,
       };
