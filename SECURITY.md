@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only last version of Website Icon Proxy is supported. It's designed to let users run only latest version of software.
+Only last version of Website Icons Proxy is supported. It's designed to let users run only latest version of software.
 
 ## Reporting a Vulnerability
 

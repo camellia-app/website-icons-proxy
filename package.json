@@ -1,5 +1,5 @@
 {
-  "name": "website-icon-proxy",
+  "name": "website-icons-proxy",
   "private": true,
   "scripts": {
     "start": "wrangler dev",

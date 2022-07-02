@@ -1,10 +1,10 @@
-# Website Icon Proxy
+# Website Icons Proxy
 
 This repository contains [Cloudflare Worker](https://workers.cloudflare.com) that proxies favicons from websites. Cloudflare Workers are like serverless cloud functions, but also they can cache stuff in Cloudflare CDN to make thing faster.
 
 If you are not familiar with Cloudflare Workers, visit [Cloudflare Workers documentation](https://developers.cloudflare.com/workers/). Or you can just press the button instead:
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/camellia-app/website-icon-proxy)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/camellia-app/website-icons-proxy)
 
 ## Usage example
 

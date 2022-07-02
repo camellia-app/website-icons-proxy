@@ -1,7 +1,7 @@
-name = "website-icon-proxy"
+name = "website-icons-proxy"
 main = "src/cloudflare-worker.ts"
 compatibility_date = "2022-07-02"
 
 [env.production]
 zone_id = "eae323d2de42cb464832ccc2295636fb"
-route = "website-icon.camellia.app/*"
+route = "website-icons.camellia.app/*"
