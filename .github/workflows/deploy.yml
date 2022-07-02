@@ -35,7 +35,6 @@ jobs:
           key: ${{ runner.os }}-npm-production-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-production-
-            ${{ runner.os }}-npm-
 
       - name: Install npm dependencies
         run: npm ci --production --prefer-offline
