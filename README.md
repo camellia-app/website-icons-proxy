@@ -22,7 +22,7 @@ Returns the largest favicon associated with passed domain.
 
 What it does under the hood:
 
-1. It sends request to `https://{domain}/` to receive HTML of the index page.
-2. Then, it looks for `head > link[rel~=icon]` elements to find all favicon elements.
-3. It downloads all icons sequentially from largest to smallest. When first valid icon found, it returned as response.
+1. It sends request to `https://{domain}/` to receive HTML of the index page. It may follow redirects if needed.
+2. Then, it looks for `head > link[rel~=icon]` elements to find all favicon links.
+3. It downloads all icons sequentially from largest to smallest until successful download. It prioritizes favicons by `sizes` and `type` attributes.
 4. As fallback, if some previous step failed, request will be sent to `https://{domain}/favicon.ico`.
