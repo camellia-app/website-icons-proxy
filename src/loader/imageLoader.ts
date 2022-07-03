@@ -20,5 +20,13 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
     throw new ImageDownloadingError(url);
   }
 
+  const contentType = response.headers.get('content-type');
+
+  if (contentType !== null && !contentType.startsWith('image/')) {
+    console.info(`Downloaded file is not an image: ${url} (Content-Type: ${contentType})`);
+
+    throw new ImageDownloadingError(url);
+  }
+
   return await response.blob();
 };
