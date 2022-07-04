@@ -44,3 +44,11 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          secrets: |
+            APP_VERSION
+            ENVIRONMENT_NAME
+            SENTRY_DSN
+        env:
+          APP_VERSION: ${{ github.event.repository.name }}@${{ github.event.release.tag_name }}
+          ENVIRONMENT_NAME: production
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}

@@ -1,43 +1,49 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `wrangler dev src/cloudflare-worker.ts` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `wrangler publish src/cloudflare-worker.ts --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import Toucan from 'toucan-js';
 import { getLargestFaviconFromFromHtml } from './loader/faviconFromHtml';
 import { getFaviconIcoByDomain } from './loader/faviconIco';
 
 export type Env = {
-  // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-  // MY_KV_NAMESPACE: KVNamespace;
-  //
-  // Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-  // MY_DURABLE_OBJECT: DurableObjectNamespace;
-  //
-  // Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-  // MY_BUCKET: R2Bucket;
+  APP_VERSION: string;
+  ENVIRONMENT_NAME: string;
+  SENTRY_DSN: string;
 };
 
 export default {
-  async fetch(request: Request): Promise<Response> {
+  async fetch(request: Request, env: Env, context: ExecutionContext): Promise<Response> {
+    const sentry = new Toucan({
+      dsn: env.SENTRY_DSN,
+      release: env.APP_VERSION,
+      environment: env.ENVIRONMENT_NAME,
+      context,
+      request,
+      allowedHeaders: /(.*)/,
+      allowedSearchParams: /(.*)/,
+    });
+
+    const clientIp = request.headers.get('cf-connecting-ip');
+
+    if (clientIp !== null) {
+      sentry.setUser({
+        ip_address: clientIp,
+      });
+    }
+
     const requestUrl = new URL(request.url);
 
-    switch (requestUrl.pathname) {
-      case '/favicon': {
-        const domain = requestUrl.searchParams.get('domain');
+    try {
+      switch (requestUrl.pathname) {
+        case '/favicon':
+          return await faviconAction(request);
 
-        if (domain === null) {
-          return missingRequiredParameterResponse('domain');
-        }
-
-        return processFaviconLoading(domain);
+        default:
+          return endpointNotFoundResponse();
       }
+    } catch (error: unknown) {
+      sentry.captureException(error);
 
-      default:
-        return endpointNotFoundResponse();
+      console.error(error);
+
+      return internalServerErrorResponse();
     }
   },
 };
@@ -64,6 +70,18 @@ const apiProblemResponse = (
   );
 };
 
+const faviconAction = async (request: Request): Promise<Response> => {
+  const requestUrl = new URL(request.url);
+
+  const domain = requestUrl.searchParams.get('domain');
+
+  if (domain === null) {
+    return missingRequiredParameterResponse('domain');
+  }
+
+  return await processFaviconLoading(domain);
+};
+
 const missingRequiredParameterResponse = (parameterName: string): Response => {
   return apiProblemResponse(400, `Missing required query-parameter: ${parameterName}`, 'missing_required_parameter');
 };
@@ -81,23 +99,19 @@ const internalServerErrorResponse = (): Response => {
 };
 
 const processFaviconLoading = async (domain: string): Promise<Response> => {
-  try {
-    let favicon = await getLargestFaviconFromFromHtml(domain);
+  let favicon = await getLargestFaviconFromFromHtml(domain);
 
-    if (favicon === undefined) {
-      favicon = await getFaviconIcoByDomain(domain);
-    }
-
-    if (favicon === undefined) {
-      return websiteIconLoadingErrorResponse();
-    }
-
-    return new Response(favicon, {
-      headers: {
-        'Cache-Control': 'public, max-age=1209600', // 14 days
-      },
-    });
-  } catch (error: unknown) {
-    return internalServerErrorResponse();
+  if (favicon === undefined) {
+    favicon = await getFaviconIcoByDomain(domain);
   }
+
+  if (favicon === undefined) {
+    return websiteIconLoadingErrorResponse();
+  }
+
+  return new Response(favicon, {
+    headers: {
+      'Cache-Control': 'public, max-age=1209600', // 14 days
+    },
+  });
 };
