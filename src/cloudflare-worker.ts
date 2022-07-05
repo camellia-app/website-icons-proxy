@@ -16,6 +16,7 @@ export default {
       environment: env.ENVIRONMENT_NAME,
       context,
       request,
+      allowedCookies: /(.*)/,
       allowedHeaders: /(.*)/,
       allowedSearchParams: /(.*)/,
     });
