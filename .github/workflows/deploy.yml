@@ -35,9 +35,10 @@ jobs:
           key: ${{ runner.os }}-npm-production-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-production-
+            ${{ runner.os }}-npm-
 
       - name: Install npm dependencies
-        run: npm ci --production --prefer-offline
+        run: npm ci --omit=dev --prefer-offline
 
       - name: Run Wrangler
         uses: cloudflare/wrangler-action@2.0.0
