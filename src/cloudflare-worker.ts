@@ -33,6 +33,9 @@ export default {
 
     try {
       switch (requestUrl.pathname) {
+        case '/':
+          return healthAction(env.APP_VERSION);
+
         case '/favicon':
           return await faviconAction(request);
 
@@ -66,6 +69,20 @@ const apiProblemResponse = (
       status: status,
       headers: {
         'content-type': 'application/problem+json; charset=UTF-8',
+      },
+    },
+  );
+};
+
+const healthAction = (appVersion: string): Response => {
+  return new Response(
+    JSON.stringify({
+      releaseId: appVersion,
+      status: 'pass',
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/health+json',
       },
     },
   );
