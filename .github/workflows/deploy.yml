@@ -53,3 +53,48 @@ jobs:
           APP_VERSION: ${{ github.event.repository.name }}@${{ github.event.release.tag_name }}
           ENVIRONMENT_NAME: production
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+  sentry_release:
+    runs-on: ubuntu-latest
+    name: Sentry Release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3.0.4
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ runner.os }}-npm-production-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-production-
+            ${{ runner.os }}-npm-
+
+      - name: Install npm dependencies
+        run: npm ci --omit=dev --prefer-offline
+
+      - name: Compile TypeScript
+        run: npx tsc
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1.1.6
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ github.event.repository.name }}
+        with:
+          environment: production
+          version: ${{ github.event.repository.name }}@${{ github.event.release.tag_name }}
+          sourcemaps: ./src
