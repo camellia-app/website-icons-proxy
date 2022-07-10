@@ -5,7 +5,7 @@ import { getImageByUrl, ImageDownloadingError } from './imageLoader';
 export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blob | undefined> => {
   const htmlUrl = `https://${domain}/`;
 
-  Logger.startHttpRequest(htmlUrl, 'GET');
+  Logger.httpRequest(htmlUrl, 'GET');
 
   const response = await fetch(htmlUrl, {
     cf: {
@@ -14,7 +14,7 @@ export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blo
     },
   });
 
-  Logger.finishHttpRequest(htmlUrl, 'GET', response.status);
+  Logger.httpResponse(htmlUrl, 'GET', response.status);
 
   if (response.status >= 300) {
     return undefined;

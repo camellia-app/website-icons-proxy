@@ -7,7 +7,7 @@ export class ImageDownloadingError extends Error {
 }
 
 export const getImageByUrl = async (url: string): Promise<Blob> => {
-  Logger.startHttpRequest(url, 'GET');
+  Logger.httpRequest(url, 'GET');
 
   const response = await fetch(url, {
     cf: {
@@ -16,7 +16,7 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
     },
   });
 
-  Logger.finishHttpRequest(url, 'GET', response.status);
+  Logger.httpResponse(url, 'GET', response.status);
 
   if (response.status >= 300) {
     throw new ImageDownloadingError(url);

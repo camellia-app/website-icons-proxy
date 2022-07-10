@@ -8,12 +8,12 @@ export class Logger {
     this.sentryClient = sentryClient;
   };
 
-  public static readonly startHttpRequest = (url: string, method: string): void => {
-    console.info(`[http] Started HTTP request: ${method.toUpperCase()} ${url}`);
+  public static readonly httpRequest = (url: string, method: string): void => {
+    console.info(`[http] Request: ${method.toUpperCase()} ${url}`);
 
     this.addSentryBreadcrumb({
       type: 'http',
-      category: 'started',
+      category: 'request',
       level: 'info',
       data: {
         method: method,
@@ -22,12 +22,12 @@ export class Logger {
     });
   };
 
-  public static readonly finishHttpRequest = (url: string, method: string, status_code: number): void => {
-    console.info(`[http] Finished HTTP request: ${method.toUpperCase()} ${url} [${status_code}]`);
+  public static readonly httpResponse = (url: string, method: string, status_code: number): void => {
+    console.info(`[http] Response: ${method.toUpperCase()} ${url} [${status_code}]`);
 
     this.addSentryBreadcrumb({
       type: 'http',
-      category: 'finished',
+      category: 'response',
       level: 'info',
       data: {
         method: method,
