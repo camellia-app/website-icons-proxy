@@ -15,6 +15,9 @@ addEventListener('fetch', (event) => {
     allowedCookies: /(.*)/,
     allowedHeaders: /(.*)/,
     allowedSearchParams: /(.*)/,
+    rewriteFrames: {
+      root: '/',
+    },
   });
 
   const request = event.request;

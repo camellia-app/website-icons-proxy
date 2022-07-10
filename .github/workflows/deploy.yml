@@ -75,3 +75,4 @@ jobs:
           environment: production
           version: ${{ github.event.repository.name }}@${{ github.event.release.tag_name }}
           sourcemaps: ./dist/
+          url_prefix: /
