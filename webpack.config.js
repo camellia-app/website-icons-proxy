@@ -6,7 +6,7 @@ module.exports = {
     filename: 'worker.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  devtool: 'source-map',
+  devtool: 'hidden-source-map',
   mode: 'production',
   resolve: {
     extensions: ['.ts', '.js'],
