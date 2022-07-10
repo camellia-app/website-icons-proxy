@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'src', 'cloudflare-worker.ts'),
+  entry: path.resolve(__dirname, 'src', 'worker.ts'),
   output: {
-    filename: 'cloudflare-worker.js',
+    filename: 'worker.js',
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: 'source-map',
