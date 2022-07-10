@@ -1,5 +1,5 @@
 name = "website-icons-proxy"
-main = "src/cloudflare-worker.ts"
+main = "dist/cloudflare-worker.js"
 compatibility_date = "2022-07-02"
 
 [env.production]

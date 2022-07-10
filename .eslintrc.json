@@ -28,6 +28,16 @@
   },
   "overrides": [
     {
+      "files": ["webpack.config.js"],
+      "env": {
+        "node": true,
+        "worker": false
+      },
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
       "files": ["*.ts", "*.tsx"],
       "parserOptions": {
         "project": ["./tsconfig.json"]

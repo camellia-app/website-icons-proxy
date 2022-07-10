@@ -2,55 +2,56 @@ import Toucan from 'toucan-js';
 import { getLargestFaviconFromFromHtml } from './loader/faviconFromHtml';
 import { getFaviconIcoByDomain } from './loader/faviconIco';
 
-export type Env = {
-  APP_VERSION: string;
-  ENVIRONMENT_NAME: string;
-  SENTRY_DSN: string;
-};
+declare const APP_VERSION: string;
+declare const ENVIRONMENT_NAME: string;
+declare const SENTRY_DSN: string;
 
-export default {
-  async fetch(request: Request, env: Env, context: ExecutionContext): Promise<Response> {
-    const sentry = new Toucan({
-      dsn: env.SENTRY_DSN,
-      release: env.APP_VERSION,
-      environment: env.ENVIRONMENT_NAME,
-      context,
-      request,
-      allowedCookies: /(.*)/,
-      allowedHeaders: /(.*)/,
-      allowedSearchParams: /(.*)/,
+addEventListener('fetch', (event) => {
+  const sentry = new Toucan({
+    dsn: SENTRY_DSN,
+    release: APP_VERSION,
+    environment: ENVIRONMENT_NAME,
+    context: event,
+    allowedCookies: /(.*)/,
+    allowedHeaders: /(.*)/,
+    allowedSearchParams: /(.*)/,
+  });
+
+  const request = event.request;
+
+  const clientIp = request.headers.get('cf-connecting-ip');
+
+  if (clientIp !== null) {
+    sentry.setUser({
+      ip_address: clientIp,
     });
+  }
 
-    const clientIp = request.headers.get('cf-connecting-ip');
+  event.respondWith(
+    (async (): Promise<Response> => {
+      const requestUrl = new URL(request.url);
 
-    if (clientIp !== null) {
-      sentry.setUser({
-        ip_address: clientIp,
-      });
-    }
+      try {
+        switch (requestUrl.pathname) {
+          case '/':
+            return healthAction(APP_VERSION);
 
-    const requestUrl = new URL(request.url);
+          case '/favicon':
+            return await faviconAction(request);
 
-    try {
-      switch (requestUrl.pathname) {
-        case '/':
-          return healthAction(env.APP_VERSION);
+          default:
+            return endpointNotFoundResponse();
+        }
+      } catch (error: unknown) {
+        sentry.captureException(error);
 
-        case '/favicon':
-          return await faviconAction(request);
+        console.error(error);
 
-        default:
-          return endpointNotFoundResponse();
+        return internalServerErrorResponse();
       }
-    } catch (error: unknown) {
-      sentry.captureException(error);
-
-      console.error(error);
-
-      return internalServerErrorResponse();
-    }
-  },
-};
+    })(),
+  );
+});
 
 const apiProblemResponse = (
   status: number,
@@ -82,7 +83,7 @@ const healthAction = (appVersion: string): Response => {
     }),
     {
       headers: {
-        'Content-Type': 'application/health+json',
+        'Content-Type': 'application/health+json; charset=UTF-8',
       },
     },
   );
