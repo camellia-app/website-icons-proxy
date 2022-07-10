@@ -1,10 +1,11 @@
 import { parse } from 'node-html-parser';
+import { Logger } from '../logger';
 import { getImageByUrl, ImageDownloadingError } from './imageLoader';
 
 export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blob | undefined> => {
   const htmlUrl = `https://${domain}/`;
 
-  console.info(`Downloading HTML document to find links to favicons: ${htmlUrl}`);
+  Logger.startHttpRequest(htmlUrl, 'GET');
 
   const response = await fetch(htmlUrl, {
     cf: {
@@ -13,9 +14,9 @@ export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blo
     },
   });
 
-  if (response.status >= 300) {
-    console.info(`Could not load HTML document: ${htmlUrl} (status code: ${response.status})`);
+  Logger.finishHttpRequest(htmlUrl, 'GET', response.status);
 
+  if (response.status >= 300) {
     return undefined;
   }
 
@@ -74,7 +75,10 @@ const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
 
       const absoluteHref = normalizeHref(response.url, href);
 
-      console.info(`Found icon with URL: ${absoluteHref} (type: ${type ?? '???'}, sizes: ${sizes ?? '???'})`);
+      Logger.info(
+        'favicon_from_html',
+        `Found icon with URL: ${absoluteHref} (type: ${type ?? '???'}, sizes: ${sizes ?? '???'})`,
+      );
 
       return {
         url: absoluteHref,

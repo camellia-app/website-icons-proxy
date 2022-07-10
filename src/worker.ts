@@ -1,6 +1,7 @@
 import Toucan from 'toucan-js';
 import { getLargestFaviconFromFromHtml } from './loader/faviconFromHtml';
 import { getFaviconIcoByDomain } from './loader/faviconIco';
+import { Logger } from './logger';
 
 declare const APP_VERSION: string;
 declare const ENVIRONMENT_NAME: string;
@@ -23,6 +24,8 @@ addEventListener('fetch', (event) => {
   const request = event.request;
 
   const clientIp = request.headers.get('cf-connecting-ip');
+
+  Logger.setSentryClient(sentry);
 
   if (clientIp !== null) {
     sentry.setUser({
@@ -47,8 +50,6 @@ addEventListener('fetch', (event) => {
         }
       } catch (error: unknown) {
         sentry.captureException(error);
-
-        console.error(error);
 
         return internalServerErrorResponse();
       }
@@ -124,6 +125,11 @@ const processFaviconLoading = async (domain: string): Promise<Response> => {
   let favicon = await getLargestFaviconFromFromHtml(domain);
 
   if (favicon === undefined) {
+    Logger.info(
+      'worker',
+      'Could not get any valid favicon from HTML response, falling back to well-known URL where ICO image may be stored.',
+    );
+
     favicon = await getFaviconIcoByDomain(domain);
   }
 

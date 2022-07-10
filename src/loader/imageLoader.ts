@@ -1,3 +1,5 @@
+import { Logger } from '../logger';
+
 export class ImageDownloadingError extends Error {
   constructor(public readonly imageUrl: string) {
     super(`Image downloading error: ${imageUrl}`);
@@ -5,7 +7,7 @@ export class ImageDownloadingError extends Error {
 }
 
 export const getImageByUrl = async (url: string): Promise<Blob> => {
-  console.info(`Loading image by URL: ${url}`);
+  Logger.startHttpRequest(url, 'GET');
 
   const response = await fetch(url, {
     cf: {
@@ -14,16 +16,16 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
     },
   });
 
-  if (response.status >= 300) {
-    console.info(`Could not load image by URL: ${url} (status code: ${response.status})`);
+  Logger.finishHttpRequest(url, 'GET', response.status);
 
+  if (response.status >= 300) {
     throw new ImageDownloadingError(url);
   }
 
   const contentType = response.headers.get('content-type');
 
   if (contentType !== null && !contentType.startsWith('image/')) {
-    console.info(`Downloaded file is not an image: ${url} (Content-Type: ${contentType})`);
+    Logger.info('image_loader', `Downloaded file is not an image: ${url} (Content-Type: ${contentType})`);
 
     throw new ImageDownloadingError(url);
   }
