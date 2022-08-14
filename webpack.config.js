@@ -1,4 +1,5 @@
 const path = require('path');
+const SourceMapDevToolPlugin = require('webpack').SourceMapDevToolPlugin;
 
 module.exports = {
   entry: path.resolve(__dirname, 'src', 'worker.ts'),
@@ -7,7 +8,12 @@ module.exports = {
     filename: 'worker.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  devtool: 'source-map',
+  devtool: false,
+  plugins: [
+    new SourceMapDevToolPlugin({
+      sourceRoot: '/',
+    }),
+  ],
   mode: 'production',
   resolve: {
     extensions: ['.ts', '.js'],
