@@ -22,7 +22,7 @@ module.exports = {
           compilerOptions: {
             inlineSources: true,
             sourceMap: true,
-            sourceRoot: "/",
+            sourceRoot: '/',
           },
         },
       },
