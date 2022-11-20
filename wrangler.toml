@@ -5,4 +5,4 @@ no_bundle = true
 
 [env.production]
 zone_id = "eae323d2de42cb464832ccc2295636fb"
-route = "website-icons.camellia.app/*"
+route = { pattern = "website-icons.camellia.app/*", zone_name = "camellia.app" }
