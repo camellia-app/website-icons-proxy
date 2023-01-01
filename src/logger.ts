@@ -37,6 +37,31 @@ export class Logger {
     });
   };
 
+  public static readonly httpNetworkError = (url: string, method: string, error: TypeError): void => {
+    let error_cause: unknown = undefined;
+
+    if ('cause' in error) {
+      error_cause = error.cause;
+    }
+
+    console.warn(
+      `[http] Network error: ${method.toUpperCase()} ${url} (${error.toString()}; cause: ${JSON.stringify(
+        error_cause,
+      )})`,
+    );
+
+    this.addSentryBreadcrumb({
+      type: 'http',
+      category: 'network_error',
+      level: 'warning',
+      data: {
+        method: method,
+        url: url,
+        network_error: error_cause,
+      },
+    });
+  };
+
   public static readonly debug = (category: string, message: string): void => {
     console.debug(`[${category}] ${message}`);
 

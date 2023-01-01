@@ -1,25 +1,37 @@
 import { Logger } from '../logger';
 
 export class ImageDownloadingError extends Error {
-  constructor(public readonly imageUrl: string) {
-    super(`Image downloading error: ${imageUrl}`);
+  constructor(public readonly imageUrl: string, public readonly reason: string) {
+    super(`Image downloading error: ${imageUrl} (reason: ${reason})`);
   }
 }
 
 export const getImageByUrl = async (url: string): Promise<Blob> => {
   Logger.httpRequest(url, 'GET');
 
-  const response = await fetch(url, {
-    cf: {
-      cacheTtl: 60 * 60, // 1 hour
-      cacheEverything: true,
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(url, {
+      cf: {
+        cacheTtl: 60 * 60, // 1 hour
+        cacheEverything: true,
+      },
+    });
+  } catch (error: unknown) {
+    if (error instanceof TypeError) {
+      Logger.httpNetworkError(url, 'GET', error);
+
+      throw new ImageDownloadingError(url, `Network error: ${error.message}`);
+    }
+
+    throw error;
+  }
 
   Logger.httpResponse(url, 'GET', response.status);
 
   if (response.status >= 300) {
-    throw new ImageDownloadingError(url);
+    throw new ImageDownloadingError(url, `${response.status} is not valid response status code`);
   }
 
   const contentType = response.headers.get('content-type');
@@ -27,7 +39,7 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
   if (contentType !== null && !contentType.startsWith('image/')) {
     Logger.info('image_loader', `Downloaded file is not an image: ${url} (Content-Type: ${contentType})`);
 
-    throw new ImageDownloadingError(url);
+    throw new ImageDownloadingError(url, `${contentType} is not valid Content-Type value`);
   }
 
   return await response.blob();

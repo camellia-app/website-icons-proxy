@@ -7,12 +7,24 @@ export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blo
 
   Logger.httpRequest(htmlUrl, 'GET');
 
-  const response = await fetch(htmlUrl, {
-    cf: {
-      cacheTtl: 60 * 60, // 1 hour
-      cacheEverything: true,
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(htmlUrl, {
+      cf: {
+        cacheTtl: 60 * 60, // 1 hour
+        cacheEverything: true,
+      },
+    });
+  } catch (error: unknown) {
+    if (error instanceof TypeError) {
+      Logger.httpNetworkError(htmlUrl, 'GET', error);
+
+      return undefined;
+    }
+
+    throw error;
+  }
 
   Logger.httpResponse(htmlUrl, 'GET', response.status);
 
