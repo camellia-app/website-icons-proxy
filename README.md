@@ -26,3 +26,23 @@ What it does under the hood:
 2. Then, it looks for `head > link[rel~=icon]` elements to find all favicon links.
 3. It downloads all icons sequentially from largest to smallest until successful download. It prioritizes favicons by `sizes` and `type` attributes.
 4. As fallback, if some previous step failed, request will be sent to `https://{domain}/favicon.ico`.
+
+## Developing the worker
+
+Clone the repository. Then, install dependencies:
+
+```bash
+npm ci
+```
+
+Start webpack:
+
+```bash
+webpack watch
+```
+
+Open another terminal and then run the worker in development mode:
+
+```bash
+wrangler dev
+```
