@@ -27,6 +27,8 @@ export default {
 
     Logger.setSentryClient(sentry);
 
+    const cache = caches.default;
+
     const requestUrl = new URL(request.url);
 
     try {
@@ -34,8 +36,20 @@ export default {
         case '/':
           return healthAction(env.APP_VERSION);
 
-        case '/favicon':
-          return await faviconAction(request);
+        case '/favicon': {
+          const cacheUrl = new URL(request.url);
+          const cacheKey = new Request(cacheUrl.toString(), request);
+
+          let response = await cache.match(cacheKey);
+
+          if (response === undefined) {
+            response = await faviconAction(request);
+
+            context.waitUntil(cache.put(cacheKey, response.clone()));
+          }
+
+          return response;
+        }
 
         default:
           return endpointNotFoundResponse();
@@ -128,9 +142,12 @@ const processFaviconLoading = async (domain: string): Promise<Response> => {
     return websiteIconLoadingErrorResponse();
   }
 
+  const browserCacheTtl = 60 * 60 * 12; // 12h
+  const cdnCacheTtl = 60 * 60 * 12; // 12h
+
   return new Response(favicon, {
     headers: {
-      'Cache-Control': 'public, max-age=1209600', // 14 days
+      'Cache-Control': `public, max-age=${browserCacheTtl}, s-maxage=${cdnCacheTtl}`,
     },
   });
 };
