@@ -9,7 +9,7 @@
   "dependencies": {
     "node-html-parser": "6.1.5",
     "toucan-js": "3.1.0",
-    "ts-loader": "9.4.2",
+    "ts-loader": "9.4.3",
     "webpack": "5.84.1",
     "webpack-cli": "5.0.1",
     "wrangler": "3.0.1"
