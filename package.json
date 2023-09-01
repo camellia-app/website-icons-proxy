@@ -7,7 +7,7 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
-    "node-html-parser": "6.1.5",
+    "node-html-parser": "6.1.6",
     "toucan-js": "3.1.0",
     "ts-loader": "9.4.4",
     "webpack": "5.88.1",
