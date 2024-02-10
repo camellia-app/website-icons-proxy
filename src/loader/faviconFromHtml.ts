@@ -1,6 +1,7 @@
 import { parse } from 'node-html-parser';
+
 import { Logger } from '../logger';
-import { getImageByUrl, ImageDownloadingError } from './imageLoader';
+import { ImageDownloadingError, getImageByUrl } from './imageLoader';
 
 export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blob | undefined> => {
   const htmlUrl = `https://${domain}/`;
@@ -12,8 +13,8 @@ export const getLargestFaviconFromFromHtml = async (domain: string): Promise<Blo
   try {
     response = await fetch(htmlUrl, {
       cf: {
-        cacheTtl: 60 * 60, // 1 hour
         cacheEverything: true,
+        cacheTtl: 60 * 60, // 1 hour
       },
     });
   } catch (error: unknown) {
@@ -93,9 +94,9 @@ const extractIcons = async (response: Response): Promise<Array<Favicon>> => {
       );
 
       return {
-        url: absoluteHref,
         mimeType: type?.trim(),
         size: sizes !== undefined ? getResolutionFromSizesAttribute(sizes) : undefined,
+        url: absoluteHref,
       };
     })
     .filter((favicon): favicon is Favicon => favicon !== undefined);
@@ -111,8 +112,8 @@ const getResolutionFromSizesAttribute = (sizes: string): Resolution | undefined 
     .map((sizeString): Resolution | undefined => {
       if (sizeString === 'any') {
         return {
-          width: Infinity,
           height: Infinity,
+          width: Infinity,
         };
       }
 
@@ -136,8 +137,8 @@ const getResolutionFromSizesAttribute = (sizes: string): Resolution | undefined 
       }
 
       return {
-        width: width,
         height: height,
+        width: width,
       };
     })
     .filter((resolution): resolution is Resolution => resolution !== undefined)

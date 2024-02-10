@@ -1,4 +1,4 @@
-import { getImageByUrl, ImageDownloadingError } from './imageLoader';
+import { ImageDownloadingError, getImageByUrl } from './imageLoader';
 
 export const getFaviconIcoByDomain = async (domain: string): Promise<Blob | undefined> => {
   const faviconUrl = `https://${domain}/favicon.ico`;

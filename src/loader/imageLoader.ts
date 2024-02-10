@@ -14,8 +14,8 @@ export const getImageByUrl = async (url: string): Promise<Blob> => {
   try {
     response = await fetch(url, {
       cf: {
-        cacheTtl: 60 * 60, // 1 hour
         cacheEverything: true,
+        cacheTtl: 60 * 60, // 1 hour
       },
     });
   } catch (error: unknown) {

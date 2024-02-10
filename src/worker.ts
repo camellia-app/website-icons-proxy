@@ -1,4 +1,5 @@
 import { Toucan } from 'toucan-js';
+
 import { getLargestFaviconFromFromHtml } from './loader/faviconFromHtml';
 import { getFaviconIcoByDomain } from './loader/faviconIco';
 import { Logger } from './logger';
@@ -12,16 +13,16 @@ export type Env = {
 export default {
   async fetch(request: Request, env: Env, context: ExecutionContext): Promise<Response> {
     const sentry = new Toucan({
-      dsn: env.SENTRY_DSN,
-      release: env.APP_VERSION,
-      environment: env.ENVIRONMENT_NAME,
       context,
+      dsn: env.SENTRY_DSN,
+      environment: env.ENVIRONMENT_NAME,
+      release: env.APP_VERSION,
       request,
       requestDataOptions: {
         allowedCookies: true,
         allowedHeaders: true,
-        allowedSearchParams: true,
         allowedIps: true,
+        allowedSearchParams: true,
       },
     });
 
@@ -74,16 +75,16 @@ const apiProblemResponse = (
 ): Response => {
   return new Response(
     JSON.stringify({
+      detail: description,
       status: status,
       type: type,
-      detail: description,
       ...additionalProperties,
     }),
     {
-      status: status,
       headers: {
         'content-type': 'application/problem+json; charset=UTF-8',
       },
+      status: status,
     },
   );
 };
