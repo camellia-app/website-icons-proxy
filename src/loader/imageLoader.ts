@@ -1,7 +1,10 @@
 import { Logger } from '../logger';
 
 export class ImageDownloadingError extends Error {
-  constructor(public readonly imageUrl: string, public readonly reason: string) {
+  constructor(
+    public readonly imageUrl: string,
+    public readonly reason: string,
+  ) {
     super(`Image downloading error: ${imageUrl} (reason: ${reason})`);
   }
 }
