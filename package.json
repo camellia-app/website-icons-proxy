@@ -10,7 +10,7 @@
     "node-html-parser": "6.1.5",
     "toucan-js": "3.3.1",
     "ts-loader": "9.4.4",
-    "webpack": "5.88.1",
+    "webpack": "5.90.1",
     "webpack-cli": "5.1.4",
     "wrangler": "3.2.0"
   },
