@@ -9,7 +9,7 @@
     "fix-eslint": "npx eslint --fix ."
   },
   "dependencies": {
-    "node-html-parser": "6.1.12",
+    "node-html-parser": "6.1.13",
     "toucan-js": "3.3.1",
     "ts-loader": "9.5.1",
     "webpack": "5.91.0",
